@@ -7,18 +7,31 @@ import toast from 'react-hot-toast';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('buyer');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const dashboardFor = (userRole) => {
+    if (userRole === 'admin') return '/admin';
+    if (userRole === 'seller') return '/seller/dashboard';
+    return '/buyer/dashboard';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) return toast.error('All fields are required');
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/');
+      const { user } = await login(email, password);
+      // Role is authoritative from the server. If the account's real role
+      // doesn't match the tab the user picked, let them know but still route
+      // them to the dashboard that matches their actual account role.
+      if (user.role !== 'admin' && user.role !== role) {
+        toast(`You're registered as a ${user.role}. Signing you in as ${user.role}.`, { icon: 'ℹ️' });
+      }
+      navigate(dashboardFor(user.role));
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     }
@@ -36,6 +49,18 @@ const Login = () => {
           <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>Sign in to your CampusCart account</p>
         </div>
         <div style={{ background: 'white', borderRadius: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', padding: '2rem', border: '1px solid #f1f5f9' }}>
+          <div style={{ display: 'flex', background: '#f3f4f6', borderRadius: '0.75rem', padding: '0.25rem', marginBottom: '1.5rem' }}>
+            {['buyer', 'seller'].map(r => (
+              <button key={r} type="button" onClick={() => setRole(r)} style={{
+                flex: 1, padding: '0.625rem', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                background: role === r ? 'white' : 'transparent',
+                color: role === r ? '#16a34a' : '#6b7280',
+                boxShadow: role === r ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+              }}>
+                {r === 'buyer' ? 'Buyer' : 'Student Seller'}
+              </button>
+            ))}
+          </div>
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.5rem' }}>Email Address</label>
