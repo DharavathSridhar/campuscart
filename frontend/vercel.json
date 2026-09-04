@@ -1,6 +1,7 @@
 {
   "framework": "create-react-app",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "http://13.206.139.171:5000/api/$1" }
+    { "source": "/api/(.*)", "destination": "http://13.206.139.171:5000/api/$1" },
+    { "source": "/uploads/(.*)", "destination": "http://13.206.139.171:5000/uploads/$1" }
   ]
 }
