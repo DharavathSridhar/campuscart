@@ -24,10 +24,7 @@ const Login = () => {
     if (!email || !password) return toast.error('All fields are required');
     setLoading(true);
     try {
-      const { user } = await login(email, password);
-      // Role is authoritative from the server. If the account's real role
-      // doesn't match the tab the user picked, let them know but still route
-      // them to the dashboard that matches their actual account role.
+      const { user } = await login(email, password, role);
       if (user.role !== 'admin' && user.role !== role) {
         toast(`You're registered as a ${user.role}. Signing you in as ${user.role}.`, { icon: 'ℹ️' });
       }

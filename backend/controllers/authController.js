@@ -83,7 +83,7 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
@@ -101,6 +101,14 @@ exports.login = async (req, res, next) => {
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    // Roles are assigned at registration and cannot silently change at login.
+    if (role && role !== user.role && user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: `This account is registered as a ${user.role}. Please choose the ${user.role} login portal.`,
+      });
     }
 
     sendTokenResponse(user, 200, res);

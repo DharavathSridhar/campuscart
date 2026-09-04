@@ -5,6 +5,13 @@ exports.createListing = async (req, res, next) => {
   try {
     const { title, description, category, condition, transactionType, price, lendingDuration, depositAmount, campus, hostel, building, availability, images } = req.body;
 
+    if (!title || !description || !category || !condition || !transactionType || !campus || !hostel) {
+      return res.status(400).json({ success: false, message: 'Title, description, category, condition, transaction type, campus, and hostel are required' });
+    }
+    if (transactionType === 'Sell' && (price === '' || price === undefined || Number(price) < 0)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid selling price' });
+    }
+
     const listing = await Listing.create({
       seller: req.user._id,
       title, description, category, condition, transactionType,

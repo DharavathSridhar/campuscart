@@ -35,8 +35,8 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const login = async (email, password) => {
-    const { data } = await API.post('/auth/login', { email, password });
+  const login = async (email, password, role) => {
+    const { data } = await API.post('/auth/login', { email, password, role });
     localStorage.setItem('token', data.token);
     setUser(data.user);
     toast.success('Login successful!');
