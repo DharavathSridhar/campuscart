@@ -19,7 +19,10 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    socket.current = io('http://localhost:5000', {
+    const SOCKET_URL = process.env.NODE_ENV === 'production' 
+      ? 'http://13.206.139.171:5000' 
+      : 'http://localhost:5000';
+    socket.current = io(SOCKET_URL, {
       auth: { token: localStorage.getItem('token') }
     });
     socket.current.emit('join');
