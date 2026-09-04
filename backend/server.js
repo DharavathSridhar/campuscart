@@ -15,11 +15,15 @@ connectDB();
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? [process.env.CLIENT_URL, 'https://campuscart-72r9.vercel.app']
+  : ['http://localhost:3000'];
+
 const io = new Server(server, {
-  cors: { origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : 'http://localhost:3000', credentials: true },
+  cors: { origin: allowedOrigins, credentials: true },
 });
 
-app.use(cors({ origin: process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
