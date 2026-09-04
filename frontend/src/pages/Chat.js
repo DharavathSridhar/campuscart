@@ -21,6 +21,10 @@ const Chat = () => {
 
   useEffect(() => {
     const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || window.location.origin;
+    // An HTTPS page cannot connect to an HTTP Socket.IO endpoint.  The REST
+    // messaging flow still persists messages; live sockets resume once the
+    // backend is served over HTTPS/WSS.
+    if (window.location.protocol === 'https:' && !SOCKET_URL.startsWith('https://')) return undefined;
     socket.current = io(SOCKET_URL, {
       auth: { token: localStorage.getItem('token') }
     });

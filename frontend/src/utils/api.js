@@ -1,8 +1,10 @@
 import axios from 'axios';
 
-// CRA exposes only REACT_APP_* variables.  Use the configured backend in
-// development and production so HTTP and socket traffic target the same API.
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+// Vercel proxies /api to the HTTP backend.  Keeping production requests
+// same-origin prevents browsers from blocking them as mixed content.
+const API_URL = process.env.NODE_ENV === 'production'
+  ? '/api'
+  : (process.env.REACT_APP_API_URL || 'http://localhost:5000/api');
 
 const API = axios.create({ baseURL: API_URL, withCredentials: true });
 
